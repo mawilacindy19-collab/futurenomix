@@ -1,0 +1,166 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['id', 'name', 'username', 'email'])
+        && data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() <= 100
+        && data.username is string && data.username.size() <= 50
+        && data.email is string && data.email.size() <= 200;
+    }
+
+    function isValidFeedPost(data) {
+      return data.keys().hasAll(['id', 'authorId', 'content'])
+        && data.id is string && data.id.size() <= 128
+        && data.authorId is string && data.authorId.size() <= 128
+        && data.content is string && data.content.size() <= 2000;
+    }
+
+    function isValidPitchDeck(data) {
+      return data.keys().hasAll(['id', 'companyName', 'authorId'])
+        && data.id is string && data.id.size() <= 128
+        && data.companyName is string && data.companyName.size() <= 150
+        && data.authorId is string && data.authorId.size() <= 128;
+    }
+
+    function isValidJobPosting(data) {
+      return data.keys().hasAll(['id', 'title', 'company', 'posterId'])
+        && data.id is string && data.id.size() <= 128
+        && data.title is string && data.title.size() <= 150
+        && data.company is string && data.company.size() <= 150
+        && data.posterId is string && data.posterId.size() <= 128;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['id', 'conversationId', 'senderId', 'text'])
+        && data.id is string && data.id.size() <= 128
+        && data.conversationId is string && data.conversationId.size() <= 128
+        && data.senderId is string && data.senderId.size() <= 128
+        && data.text is string && data.text.size() <= 2000;
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll(['id', 'title', 'authorId'])
+        && data.id is string && data.id.size() <= 128
+        && data.title is string && data.title.size() <= 150
+        && data.authorId is string && data.authorId.size() <= 128;
+    }
+
+    function isValidMailTrigger(data) {
+      return data.keys().hasAll(['to', 'message', 'userId'])
+        && data.to is string && data.to.size() <= 200
+        && data.userId is string && data.userId == request.auth.uid
+        && data.message is map
+        && data.message.keys().hasAll(['subject', 'html'])
+        && data.message.subject is string && data.message.subject.size() <= 200
+        && data.message.html is string && data.message.html.size() <= 10000;
+    }
+
+    function isValidEmailTracking(data) {
+      return data.keys().hasAll(['id', 'emailType', 'recipientEmail', 'senderId'])
+        && data.id is string && data.id.size() <= 128
+        && data.emailType is string && data.emailType.size() <= 50
+        && data.recipientEmail is string && data.recipientEmail.size() <= 200
+        && data.senderId is string && data.senderId == request.auth.uid;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Health / Connection verification (read-only)
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isOwner(userId) && isValidUserProfile(incoming()) && !incoming().keys().contains('role');
+      allow update: if isOwner(userId) && isValidUserProfile(incoming()) 
+        && (isAdmin() || (incoming().diff(existing()).affectedKeys().hasOnly(['name', 'username', 'avatarUrl', 'bio'])));
+      allow delete: if isAdmin();
+    }
+
+    // Admins Collection
+    match /admins/{adminId} {
+      allow get: if isSignedIn();
+      allow write: if false; // Only manageable via console or service account
+    }
+
+    // Social Feed Posts Collection
+    match /posts/{postId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidFeedPost(incoming()) && incoming().authorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && existing().authorId == request.auth.uid;
+    }
+
+    // Pitch Decks Collection
+    match /pitch_decks/{deckId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidPitchDeck(incoming()) && incoming().authorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && existing().authorId == request.auth.uid;
+    }
+
+    // Job Postings Collection
+    match /jobs/{jobId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidJobPosting(incoming()) && incoming().posterId == request.auth.uid;
+      allow update, delete: if isSignedIn() && existing().posterId == request.auth.uid;
+    }
+
+    // Direct Messages Collection
+    match /messages/{messageId} {
+      allow get, list: if isSignedIn() && resource.data.senderId == request.auth.uid;
+      allow create: if isSignedIn() && isValidMessage(incoming()) && incoming().senderId == request.auth.uid;
+      allow delete: if isSignedIn() && existing().senderId == request.auth.uid;
+    }
+
+    // Projects Collection
+    match /projects/{projectId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && isValidProject(incoming()) && incoming().authorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && existing().authorId == request.auth.uid;
+    }
+
+    // Mail Trigger Collection
+    match /mail/{mailId} {
+      allow create: if isSignedIn() && isValidMailTrigger(incoming());
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Email Tracking Collection
+    match /email_tracking/{trackingId} {
+      allow create: if isSignedIn() && isValidEmailTracking(incoming());
+      allow get: if isSignedIn() && resource.data.senderId == request.auth.uid;
+      // Note: Updates are handled via API route with admin privileges
+    }
+  }
+}

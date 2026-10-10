@@ -1,0 +1,169 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 100 },
+        "username": { "type": "string", "maxLength": 50 },
+        "email": { "type": "string", "format": "email" },
+        "avatarUrl": { "type": "string" },
+        "bio": { "type": "string", "maxLength": 500 },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "username", "email"]
+    },
+    "FeedPost": {
+      "title": "FeedPost",
+      "description": "Social feed post created by a user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string", "maxLength": 100 },
+        "authorUsername": { "type": "string", "maxLength": 50 },
+        "authorAvatar": { "type": "string" },
+        "content": { "type": "string", "maxLength": 2000 },
+        "likesCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "authorId", "content"]
+    },
+    "PitchDeck": {
+      "title": "PitchDeck",
+      "description": "Pitch deck uploaded for investment funding",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "companyName": { "type": "string", "maxLength": 150 },
+        "tagline": { "type": "string", "maxLength": 300 },
+        "stage": { "type": "string" },
+        "targetRaise": { "type": "string" },
+        "deckUrl": { "type": "string" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "companyName", "authorId"]
+    },
+    "JobPosting": {
+      "title": "JobPosting",
+      "description": "Job listing posted by a company or hiring manager",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 150 },
+        "company": { "type": "string", "maxLength": 150 },
+        "location": { "type": "string", "maxLength": 150 },
+        "type": { "type": "string" },
+        "salary": { "type": "string" },
+        "posterEmail": { "type": "string", "format": "email" },
+        "posterId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "company", "posterId"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Direct message between users",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "conversationId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "text": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "senderId", "text"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Showcased project or startup",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 150 },
+        "tagline": { "type": "string", "maxLength": 300 },
+        "upvotesCount": { "type": "integer" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "authorId"]
+    },
+    "MailTrigger": {
+      "title": "MailTrigger",
+      "description": "Document used to trigger an email via the Trigger Email extension",
+      "type": "object",
+      "properties": {
+        "to": { "type": "string" },
+        "message": {
+          "type": "object",
+          "properties": {
+            "subject": { "type": "string" },
+            "text": { "type": "string" },
+            "html": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["to", "message", "userId"]
+    },
+    "EmailTracking": {
+      "title": "EmailTracking",
+      "description": "Tracks when an email has been opened",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "emailType": { "type": "string" },
+        "recipientEmail": { "type": "string" },
+        "senderId": { "type": "string" },
+        "openedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "metadata": { "type": "object" }
+      },
+      "required": ["id", "emailType", "recipientEmail", "senderId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile collection"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/FeedPost" },
+      "description": "Social feed posts collection"
+    },
+    "/pitch_decks/{deckId}": {
+      "schema": { "$ref": "#/entities/PitchDeck" },
+      "description": "Pitch decks collection"
+    },
+    "/jobs/{jobId}": {
+      "schema": { "$ref": "#/entities/JobPosting" },
+      "description": "Job listings collection"
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Direct messages collection"
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Showcased projects collection"
+    },
+    "/admins/{adminId}": {
+      "schema": { "type": "object", "properties": { "role": { "type": "string" } } },
+      "description": "Admin users mapping"
+    },
+    "/mail/{mailId}": {
+      "schema": { "$ref": "#/entities/MailTrigger" },
+      "description": "Collection for triggering emails via Firebase extension"
+    },
+    "/email_tracking/{trackingId}": {
+      "schema": { "$ref": "#/entities/EmailTracking" },
+      "description": "Collection for tracking email opens"
+    }
+  }
+}

@@ -1,0 +1,196 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Hermann:ital,wght@1,400;1,600;1,700&family=Instrument+Serif:ital@1&family=Playfair+Display:ital,wght@1,600;1,700&family=Caveat:wght@600;700&family=Fredoka:wght@600;700&family=Oswald:wght@700&family=Poppins:wght@400;600;700;800&display=swap');
+@import url('https://fonts.cdnfonts.com/css/biline');
+@import url('https://fonts.cdnfonts.com/css/torus-biline');
+@import url('https://fonts.cdnfonts.com/css/debonair-inline-nf');
+@import url('https://fonts.cdnfonts.com/css/ostrich-sans');
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-classy-dark: #151A22;
+  --color-classy-cream: #f3f0e6;
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  
+  --font-sans: var(--font-sans), 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  --font-script: var(--font-script);
+  --font-succulent: var(--font-succulent);
+}
+
+.font-script {
+  font-family: var(--font-script), cursive;
+}
+
+.font-herman, .font-herman-italic, .font-logo {
+  font-family: 'Herman', 'Hermann', 'Instrument Serif', 'Playfair Display', serif;
+  font-style: italic;
+}
+
+/* Background color and induced brightness for all videos */
+video {
+  background-color: #4b6584;
+  filter: brightness(1.2) contrast(1.04);
+}
+
+#hobnob-page-container {
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+.font-succulent {
+  font-family: 'Herman', 'Hermann', 'Instrument Serif', 'Playfair Display', 'Succulent', var(--font-succulent), 'Caveat', cursive, serif;
+  font-style: italic;
+}
+
+@layer base {
+  :root {
+    --background: #f3f0e6;
+    --foreground: #151A22;
+    --card: #ffffff;
+    --card-foreground: #151A22;
+    --popover: #ffffff;
+    --popover-foreground: #151A22;
+    --primary: #151A22;
+    --primary-foreground: #f3f0e6;
+    --secondary: #e8e4dc;
+    --secondary-foreground: #151A22;
+    --muted: #e8e4dc;
+    --muted-foreground: #5a606a;
+    --accent: #c5a059;
+    --accent-foreground: #151A22;
+    --destructive: #dc2626;
+    --destructive-foreground: #f3f0e6;
+    --border: #dcd7cd;
+    --input: #dcd7cd;
+    --ring: #151A22;
+    --radius: 0.75rem;
+  }
+ 
+  .dark {
+    --background: #151A22;
+    --foreground: #f3f0e6;
+    --card: #1b212b;
+    --card-foreground: #f3f0e6;
+    --popover: #151A22;
+    --popover-foreground: #f3f0e6;
+    --primary: #f3f0e6;
+    --primary-foreground: #151A22;
+    --secondary: #222834;
+    --secondary-foreground: #f3f0e6;
+    --muted: #222834;
+    --muted-foreground: #a0a6b2;
+    --accent: #d4af37;
+    --accent-foreground: #151A22;
+    --destructive: #ef4444;
+    --destructive-foreground: #151A22;
+    --border: #2a3240;
+    --input: #2a3240;
+    --ring: #f3f0e6;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    transition: background-color 300ms, border-color 300ms, color 300ms;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans), 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    font-weight: 400;
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Pearl & Marble Classy Textures and Gradients */
+.bg-pearl-gradient {
+  background: linear-gradient(135deg, #fdfbf7 0%, #f4f0ea 50%, #eae5dc 100%);
+}
+
+.dark .bg-pearl-gradient {
+  background: linear-gradient(135deg, #1e2530 0%, #171d26 50%, #12161d 100%);
+}
+
+.bg-marble-light {
+  background: linear-gradient(120deg, #f3f0e6 0%, #e8e3d8 35%, #f7f5ef 70%, #ece6dc 100%);
+  background-image: radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 70%, rgba(21, 26, 34, 0.05) 0%, transparent 50%),
+                    linear-gradient(120deg, #f3f0e6 0%, #e8e3d8 35%, #f7f5ef 70%, #ece6dc 100%);
+}
+
+.bg-marble-dark {
+  background: linear-gradient(135deg, #151A22 0%, #1d2430 40%, #12161e 80%, #0d1016 100%);
+  background-image: radial-gradient(circle at 25% 25%, rgba(243, 240, 230, 0.06) 0%, transparent 45%),
+                    radial-gradient(circle at 75% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                    linear-gradient(135deg, #151A22 0%, #1d2430 40%, #12161e 80%, #0d1016 100%);
+}
+
+.pearl-sheen {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%);
+}
+
+.marble-card-border {
+  border: 1px solid rgba(243, 240, 230, 0.15);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scroll-dot {
+  0%, 100% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(12px); opacity: 1; }
+}
+
+@utility animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
+@utility animate-scroll-dot {
+  animation: scroll-dot 1.8s ease-in-out infinite;
+}
+
+/* Hide Next.js Dev Indicator/Portal elements completely */
+nextjs-portal, 
+#nextjs-portal, 
+[data-nextjs-portal],
+[data-next-route-announcer],
+next-route-announcer,
+.nextjs-toast-errors-parent {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
